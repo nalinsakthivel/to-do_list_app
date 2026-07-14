@@ -12,16 +12,16 @@ import { keyboardAvoidingBehavior } from '@/utils/DeviceUtils';
 import { navigate } from '@/routes/RootNavigation';
 import { RouteEnum } from '@/enums/RouteEnum';
 
-const LoginScreen = () => {
-  const { email, setEmail, password, setPassword, error, loading, handleLogin } = useScreen();
+const RegisterScreen = () => {
+  const { email, setEmail, password, setPassword, error, loading, handleRegister } = useScreen();
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={keyboardAvoidingBehavior}>
-      <Text style={styles.title}>{AppStrings.login.title}</Text>
+      <Text style={styles.title}>{AppStrings.register.title}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder={AppStrings.login.emailPlaceholder}
+        placeholder={AppStrings.register.emailPlaceholder}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -29,7 +29,7 @@ const LoginScreen = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder={AppStrings.login.passwordPlaceholder}
+        placeholder={AppStrings.register.passwordPlaceholder}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -37,16 +37,16 @@ const LoginScreen = () => {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>{AppStrings.login.loginButton}</Text>
+          <Text style={styles.buttonText}>{AppStrings.register.registerButton}</Text>
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigate(RouteEnum.REGISTER)}>
-        <Text style={styles.link}>{AppStrings.login.registerPrompt}</Text>
+      <TouchableOpacity onPress={() => navigate(RouteEnum.LOGIN)}>
+        <Text style={styles.link}>{AppStrings.register.loginPrompt}</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
@@ -94,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

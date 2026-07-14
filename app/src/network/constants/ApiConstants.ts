@@ -1,6 +1,6 @@
-import Config from 'react-native-config';
+import { API_BASE_URL } from '@env';
 
-export const BASE_URL = Config.API_BASE_URL;
+export const BASE_URL = API_BASE_URL;
 
 export const API = {
   LOGIN: '/api/auth/login',

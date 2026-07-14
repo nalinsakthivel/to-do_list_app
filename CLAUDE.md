@@ -119,6 +119,9 @@ app/
 │   │   ├── login/
 │   │   │   ├── Screen.tsx
 │   │   │   └── useScreen.ts       # POST /auth/login, store JWT
+│   │   ├── register/
+│   │   │   ├── Screen.tsx
+│   │   │   └── useScreen.ts       # POST /auth/register, store JWT
 │   │   └── taskList/
 │   │       ├── Screen.tsx
 │   │       └── useScreen.ts       # Fetch tasks, Socket.IO listener, CRUD
@@ -390,7 +393,7 @@ export const parseAxiosError = (error: unknown): string => {
 
 ## Test Accounts
 
-Register these via the app or Postman before recording:
+Register these via the app's Register screen (or Postman) before recording:
 
 ```
 user1@test.com / Test@1234
@@ -455,13 +458,15 @@ Follow these one at a time. Tell Claude Code:
 **Step 8 — Navigation**
 - `src/routes/NavigationParamList.ts`
 - `src/routes/RootNavigation.ts`
-- `src/routes/Router.tsx` — Splash → Login → TaskList
+- `src/routes/Router.tsx` — Splash → Login → Register → TaskList
 
-**Step 9 — Splash + Login Screens**
+**Step 9 — Splash + Login + Register Screens**
 - `src/screens/splash/useScreen.ts` — check MMKV token → navigate
 - `src/screens/splash/Screen.tsx` — Lottie animation
 - `src/screens/login/useScreen.ts` — login handler, store JWT
-- `src/screens/login/Screen.tsx` — email, password, login button
+- `src/screens/login/Screen.tsx` — email, password, login button, link to Register
+- `src/screens/register/useScreen.ts` — register handler, store JWT
+- `src/screens/register/Screen.tsx` — email, password, sign-up button, link to Login
 
 **Step 10 — TaskList Screen**
 - `src/screens/taskList/useScreen.ts` — fetch tasks, Socket.IO listener, CRUD handlers

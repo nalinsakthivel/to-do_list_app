@@ -10,6 +10,14 @@ export const AppStrings = {
     emailPlaceholder: 'Email',
     passwordPlaceholder: 'Password',
     loginButton: 'Login',
+    registerPrompt: "Don't have an account? Sign up",
+  },
+  register: {
+    title: 'Create Account',
+    emailPlaceholder: 'Email',
+    passwordPlaceholder: 'Password',
+    registerButton: 'Sign Up',
+    loginPrompt: 'Already have an account? Login',
   },
   taskList: {
     title: 'My Tasks',
