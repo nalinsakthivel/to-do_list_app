@@ -7,26 +7,19 @@ type AddTaskInputProps = {
 };
 
 const AddTaskInput = ({ value, onChange, onSubmit }: AddTaskInputProps) => {
+  const disabled = value.trim().length === 0;
+
   return (
-    <div style={{ display: 'flex', padding: 16, borderTop: '1px solid #eee' }}>
+    <div className="add-bar">
       <input
-        style={{ flex: 1, padding: 12, borderRadius: 8, border: '1px solid #ccc', marginRight: 8 }}
+        className="add-input"
         placeholder={AppStrings.taskList.addPlaceholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
       />
-      <button
-        onClick={onSubmit}
-        style={{
-          background: '#111',
-          color: '#fff',
-          borderRadius: 8,
-          padding: '0 20px',
-          fontWeight: 600,
-        }}
-      >
-        {AppStrings.taskList.addButton}
+      <button className="send-button" onClick={onSubmit} disabled={disabled}>
+        {AppStrings.common.add}
       </button>
     </div>
   );

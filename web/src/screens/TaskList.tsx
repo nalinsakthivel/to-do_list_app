@@ -4,6 +4,7 @@ import AddTaskInput from '@/components/AddTaskInput';
 import LoadingView from '@/components/common/LoadingView';
 import ErrorView from '@/components/common/ErrorView';
 import { AppStrings } from '@/constants/AppStrings';
+import { useAuthStore } from '@/stores/hooks/useAuthStore';
 
 const TaskList = () => {
   const {
@@ -20,6 +21,9 @@ const TaskList = () => {
     refetch,
   } = useTasks();
 
+  const email = useAuthStore((state) => state.user?.email) ?? '';
+  const completedCount = tasks.filter((t) => t.completed).length;
+
   if (loading) {
     return <LoadingView />;
   }
@@ -29,40 +33,54 @@ const TaskList = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: 480, margin: '0 auto' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 16px',
-        }}
-      >
-        <h1 style={{ fontSize: 22 }}>{AppStrings.taskList.title}</h1>
-        <button onClick={handleLogout} style={{ color: 'red' }}>
-          {AppStrings.common.logout}
-        </button>
+    <div className="page">
+      <div className="tl-header">
+        <div className="tl-header-inner">
+          <span className="tl-brand">{AppStrings.brand}</span>
+          <div className="tl-header-right">
+            <span className="tl-email">{email}</span>
+            <button className="tl-logout" onClick={handleLogout} aria-label="Logout">
+              ⏻
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        {tasks.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#999', marginTop: 40 }}>
-            {AppStrings.taskList.emptyState}
-          </p>
-        ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task._id}
-              task={task}
-              onToggle={handleToggleComplete}
-              onEdit={handleEditTask}
-              onDelete={handleDeleteTask}
-            />
-          ))
-        )}
-      </div>
+      <div className="page-inner">
+        <div className="stats-bar">
+          <div className="stat">
+            <div className="stat-number total">{tasks.length}</div>
+            <div className="stat-label">{AppStrings.taskList.statTotal}</div>
+          </div>
+          <div className="stat-divider" />
+          <div className="stat">
+            <div className="stat-number done">{completedCount}</div>
+            <div className="stat-label">{AppStrings.taskList.statDone}</div>
+          </div>
+        </div>
 
-      <AddTaskInput value={newTitle} onChange={setNewTitle} onSubmit={handleAddTask} />
+        <AddTaskInput value={newTitle} onChange={setNewTitle} onSubmit={handleAddTask} />
+
+        <div className="task-list">
+          {tasks.length === 0 ? (
+            <div className="empty">
+              <div className="empty-icon">📋</div>
+              <p className="empty-title">{AppStrings.taskList.emptyTitle}</p>
+              <p className="empty-subtitle">{AppStrings.taskList.emptySubtitle}</p>
+            </div>
+          ) : (
+            tasks.map((task) => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                onToggle={handleToggleComplete}
+                onEdit={handleEditTask}
+                onDelete={handleDeleteTask}
+              />
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };

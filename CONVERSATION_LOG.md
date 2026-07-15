@@ -556,3 +556,55 @@ What I couldn't test: actual browser rendering (no browser-automation tool here)
 ### Assistant
 
 *(This file.)*
+
+---
+
+*(User switched model to claude-opus-4-8 via `/model opus`.)*
+
+### User
+
+> Read CLAUDE.md. Then revamp the entire app UI using the following design system. Do NOT change any logic, hooks, or services — only update the Screen.tsx and component files.
+>
+> *(Followed by a full design system spec: color tokens — primary #4F46E5, success #10B981, danger #EF4444, etc.; typography scale; spacing system xs–xl; border radius per element; and detailed layouts for Splash (indigo, TaskFlow logo + tagline), Login (indigo hero + floating white card, labeled inputs, password eye toggle), TaskList (header with greeting + email + logout circle, stats bar showing Total/Done, section label, empty state), TaskCard (custom checkbox, title + created time, edit/delete icon buttons), AddTaskInput (input + send button with disabled state), Edit modal, and web app CSS-variable mirroring. General rules: no gradients, subtle shadows, 16px padding, 44x44 min tap targets, StyleSheet.create only — no inline styles, export color tokens as constants/Colors.ts, move all colors to a separate file.)*
+
+### Assistant
+
+Big UI revamp. Now on Opus. Logic/hooks/services untouched — only Screen.tsx, components, styles, new Colors token file.
+
+*(Surveyed all mobile + web UI files. Confirmed the design needed data not currently surfaced: user email for the greeting, Total/Done stats, task created-time — email read directly from authStore in the Screen (presentational), stats derived from the tasks array in-component, both without touching any hook or service. No icon library installed; asked whether to install react-native-svg or build zero-dependency icons — user chose zero-dep. Built:*
+
+*Mobile: `constants/Colors.ts` (all tokens) + `Theme.ts` (spacing/radius/typography), `components/icons/Icons.tsx` (View-drawn checkmark + Unicode-glyph icons, no deps), rewrote Splash/Login/Register/TaskList Screens and TaskCard, extracted `AddTaskInput` component, moved edit into a Modal (Cancel/Save) instead of inline, tokenized LoadingView/ErrorView, expanded AppStrings with the new copy. All StyleSheet.create, no inline styles.*
+
+*Web: `constants/Colors.ts` + a full CSS-variables block and class-based styles in `index.css` (max-width 480px centered, light-only), rewrote Login (hero + card, mode toggle preserved), TaskCard (custom checkbox + edit modal overlay), AddTaskInput (disabled send state), TaskList (header + stats bar + section label + empty state), class-based LoadingView (spinner) + ErrorView. Honored the no-inline-styles rule by moving the one stray inline margin to a class.*
+
+*Cleaned up a couple of self-inflicted messes mid-build — a `require('react-native')`-inside-component hack and a `void TrashIcon` lint-suppressor — by importing TouchableOpacity properly and dropping the unused import.)*
+
+Verified: mobile + web `tsc` clean, Vite builds and serves 200. Zero logic touched — every hook/service/store and the `useScreen`/`useAuth`/`useTasks` return contracts are byte-identical; only presentation changed. Two presentational reads added (authStore email, derived completedCount), no logic change. Couldn't visually confirm rendering (no browser/simulator automation here) — flagged for manual eyeball. Noted some glyphs render as emoji (⏻, 🗑) and offered to wire react-native-svg for crisp vector icons if preferred.
+
+---
+
+### User
+
+> once any conversation on update that on the conversation file
+
+### Assistant
+
+*(Appended the model switch, UI-revamp exchange, and this request to CONVERSATION_LOG.md. Going forward, will update this file after each new exchange.)*
+
+---
+
+*(User switched model back to claude-sonnet-5 via `/model default`. Attached a screenshot of the live web login page — showed the hero-banner layout from the first web revamp: indigo top section bleeding past the card edges, card floating off-center against the `.app-shell` border.)*
+
+### User
+
+> Revamp the web UI to be simple and clean. Same look and feel as the mobile app but adapted for browser. DO NOT touch any logic, hooks, or services.
+>
+> *(Followed by a full design spec: same color tokens as CSS variables in index.css, dropping --primary-light and --primary-tint; overall layout background #F9FAFB with 520px max-width centered; Login page as a single centered white card — no hero banner — with a 56px indigo circle + checkmark logo, "Welcome back" title, "Sign in to continue" subtitle, 48px inputs, full-width Sign In button; a flat 60px white Header with border-bottom showing "TaskFlow" brand in indigo on the left and email + a small square logout button on the right; a Stats bar card showing Total/Done counts; an Add task input row with a text "Add" button (not icon) that disables when empty; Task list cards with a checkbox, title, and small edit/delete icon buttons — no per-task timestamp; an Empty state with a 64px circle and "Add one above ↑" copy; an Edit modal with overlay + centered card. General rules: no gradients, subtle 0 1px 4px card shadows only, cursor pointer on all buttons, 0.15s hover transitions.)*
+
+### Assistant
+
+Screenshot shows current web login — card floating off-center, hero bleeding past card edges. New spec is simpler, no hero banner. Rebuilding index.css + Login/TaskList/TaskCard/AddTaskInput. Logic/hooks untouched.
+
+*(Read all five current web UI files plus AppStrings to confirm exact current state before touching anything. Fully replaced `index.css` with the new token set and class system — `.login-page`/`.login-card` replacing the old hero+floating-card pattern, `.page`/`.page-inner` (520px centered) replacing `.app-shell`, flat `.tl-header`/`.tl-header-inner` replacing the old greeting-style header, `.stats-bar`, `.add-bar`/`.add-input`/`.send-button`, `.task-card`/`.task-checkbox`/`.task-title`/`.icon-button`, `.empty`/`.empty-icon`, `.modal-overlay`/`.modal-card`/`.modal-input`. Updated AppStrings: added `brand: 'TaskFlow'`, changed login subtitle copy, changed empty-state subtitle to "Add one above ↑", added `common.add`. Rewrote Login.tsx (circle logo + centered card, no hero), TaskList.tsx (flat header with brand + email + logout, stats bar, add-input, task list — dropped the old greeting/section-label rows entirely), AddTaskInput.tsx (text "Add" button instead of a plus icon), TaskCard.tsx (dropped the per-task created-time display and its now-unused `formatTime` helper, flattened the edit/delete buttons out of an now-unstyled wrapper div, renamed the modal's input class to `.modal-input`). Grepped for any leftover references to the removed old class names (`app-shell`, `auth-hero`, `auth-card`, `tl-greeting`, `section-label`, `task-time`, `task-actions`, etc.) — none found.)*
+
+Verified: `tsc -b` clean, Vite boots and serves 200 with the new CSS in place. Zero logic/hooks/services touched — same `useAuth`/`useTasks` contracts, same mutation calls, same store reads (email from authStore, completedCount derived from tasks). Couldn't visually confirm the rendered result myself (no browser automation here) — worth a reload to compare against the new spec.

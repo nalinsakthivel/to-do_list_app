@@ -13,9 +13,19 @@ const TaskCard = ({ task, onToggle, onEdit, onDelete }: TaskCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
 
-  const commitEdit = () => {
+  const openEdit = () => {
+    setTitle(task.title);
+    setIsEditing(true);
+  };
+
+  const cancelEdit = () => {
     setIsEditing(false);
+    setTitle(task.title);
+  };
+
+  const saveEdit = () => {
     const trimmed = title.trim();
+    setIsEditing(false);
     if (trimmed && trimmed !== task.title) {
       onEdit(task, trimmed);
     } else {
@@ -24,48 +34,46 @@ const TaskCard = ({ task, onToggle, onEdit, onDelete }: TaskCardProps) => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '12px 16px',
-        borderBottom: '1px solid #eee',
-      }}
-    >
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={() => onToggle(task)}
-        style={{ marginRight: 12 }}
-      />
+    <div className="task-card">
+      <button
+        className={`task-checkbox${task.completed ? ' checked' : ''}`}
+        onClick={() => onToggle(task)}
+        aria-label="Toggle complete"
+      >
+        {task.completed ? '✓' : ''}
+      </button>
+
+      <div className={`task-title${task.completed ? ' completed' : ''}`}>{task.title}</div>
+
+      <button className="icon-button edit" onClick={openEdit} aria-label="Edit">
+        ✎
+      </button>
+      <button className="icon-button delete" onClick={() => onDelete(task)} aria-label="Delete">
+        🗑
+      </button>
 
       {isEditing ? (
-        <input
-          style={{ flex: 1, fontSize: 16 }}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={commitEdit}
-          onKeyDown={(e) => e.key === 'Enter' && commitEdit()}
-          autoFocus
-        />
-      ) : (
-        <span
-          onClick={() => setIsEditing(true)}
-          style={{
-            flex: 1,
-            fontSize: 16,
-            cursor: 'pointer',
-            textDecoration: task.completed ? 'line-through' : 'none',
-            color: task.completed ? '#999' : '#000',
-          }}
-        >
-          {task.title}
-        </span>
-      )}
-
-      <button onClick={() => onDelete(task)} style={{ color: 'red', marginLeft: 12 }}>
-        {AppStrings.common.delete}
-      </button>
+        <div className="modal-overlay" onClick={cancelEdit}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">{AppStrings.editModal.title}</h2>
+            <input
+              className="modal-input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && saveEdit()}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button className="modal-btn cancel" onClick={cancelEdit}>
+                {AppStrings.common.cancel}
+              </button>
+              <button className="modal-btn save" onClick={saveEdit}>
+                {AppStrings.common.save}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

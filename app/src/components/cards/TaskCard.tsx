@@ -1,7 +1,18 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { Task } from '@/types';
 import { AppStrings } from '@/constants/AppStrings';
+import { Colors } from '@/constants/Colors';
+import { Spacing, Radius, FontSize, FontWeight } from '@/constants/Theme';
+import { CheckmarkIcon, EditIcon, TrashIcon } from '@/components/icons/Icons';
 
 type TaskCardProps = {
   task: Task;
@@ -10,13 +21,28 @@ type TaskCardProps = {
   onDelete: (task: Task) => void;
 };
 
+const formatTime = (iso: string): string => {
+  const date = new Date(iso);
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+};
+
 const TaskCard = ({ task, onToggle, onEdit, onDelete }: TaskCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
 
-  const commitEdit = () => {
+  const openEdit = () => {
+    setTitle(task.title);
+    setIsEditing(true);
+  };
+
+  const cancelEdit = () => {
     setIsEditing(false);
+    setTitle(task.title);
+  };
+
+  const saveEdit = () => {
     const trimmed = title.trim();
+    setIsEditing(false);
     if (trimmed && trimmed !== task.title) {
       onEdit(task, trimmed);
     } else {
@@ -26,30 +52,65 @@ const TaskCard = ({ task, onToggle, onEdit, onDelete }: TaskCardProps) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.checkbox} onPress={() => onToggle(task)}>
-        <View style={[styles.checkboxInner, task.completed && styles.checkboxChecked]} />
+      <TouchableOpacity
+        style={[styles.checkbox, task.completed && styles.checkboxChecked]}
+        onPress={() => onToggle(task)}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        {task.completed ? <CheckmarkIcon size={14} color={Colors.onPrimary} /> : null}
       </TouchableOpacity>
 
-      {isEditing ? (
-        <TextInput
-          style={styles.titleInput}
-          value={title}
-          onChangeText={setTitle}
-          onBlur={commitEdit}
-          onSubmitEditing={commitEdit}
-          autoFocus
-        />
-      ) : (
-        <TouchableOpacity style={styles.titleWrapper} onPress={() => setIsEditing(true)}>
-          <Text style={[styles.title, task.completed && styles.titleCompleted]}>
-            {task.title}
-          </Text>
+      <View style={styles.center}>
+        <Text style={[styles.title, task.completed && styles.titleCompleted]} numberOfLines={2}>
+          {task.title}
+        </Text>
+        <Text style={styles.time}>{formatTime(task.createdAt)}</Text>
+      </View>
+
+      <View style={styles.actions}>
+        <TouchableOpacity style={[styles.iconButton, styles.editButton]} onPress={openEdit}>
+          <EditIcon size={16} color={Colors.primary} />
         </TouchableOpacity>
-      )}
+        <TouchableOpacity
+          style={[styles.iconButton, styles.deleteButton]}
+          onPress={() => onDelete(task)}
+        >
+          <TrashIcon size={16} color={Colors.danger} />
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity onPress={() => onDelete(task)}>
-        <Text style={styles.delete}>{AppStrings.common.delete}</Text>
-      </TouchableOpacity>
+      <Modal visible={isEditing} transparent animationType="fade" onRequestClose={cancelEdit}>
+        <TouchableWithoutFeedback onPress={cancelEdit}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalCard}>
+                <Text style={styles.modalTitle}>{AppStrings.editModal.title}</Text>
+                <TextInput
+                  style={styles.modalInput}
+                  value={title}
+                  onChangeText={setTitle}
+                  autoFocus
+                  onSubmitEditing={saveEdit}
+                />
+                <View style={styles.modalActions}>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.cancelButton]}
+                    onPress={cancelEdit}
+                  >
+                    <Text style={styles.cancelText}>{AppStrings.common.cancel}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modalButton, styles.saveButton]}
+                    onPress={saveEdit}
+                  >
+                    <Text style={styles.saveText}>{AppStrings.common.save}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -58,42 +119,119 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.card,
+    padding: Spacing.md,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 2,
   },
   checkbox: {
-    marginRight: 12,
-  },
-  checkboxInner: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 24,
+    height: 24,
+    borderRadius: Radius.checkbox,
     borderWidth: 2,
-    borderColor: '#111',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#111',
+    backgroundColor: Colors.success,
+    borderColor: Colors.success,
   },
-  titleWrapper: {
+  center: {
     flex: 1,
+    marginHorizontal: Spacing.md,
   },
   title: {
-    fontSize: 16,
+    fontSize: FontSize.body,
+    color: Colors.textPrimary,
+    fontWeight: FontWeight.medium,
   },
   titleCompleted: {
     textDecorationLine: 'line-through',
-    color: '#999',
+    color: Colors.textMuted,
   },
-  titleInput: {
+  time: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    marginTop: Spacing.xs,
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editButton: {
+    backgroundColor: Colors.primaryBg,
+    marginRight: Spacing.sm,
+  },
+  deleteButton: {
+    backgroundColor: Colors.dangerBg,
+  },
+  overlay: {
     flex: 1,
-    fontSize: 16,
-    padding: 0,
+    backgroundColor: Colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.lg,
   },
-  delete: {
-    color: 'red',
-    marginLeft: 12,
+  modalCard: {
+    width: '100%',
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.card,
+    padding: Spacing.lg,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: FontWeight.semibold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
+  },
+  modalInput: {
+    height: 52,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.input,
+    paddingHorizontal: Spacing.md,
+    fontSize: FontSize.body,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
+  },
+  modalActions: {
+    flexDirection: 'row',
+  },
+  modalButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: Radius.button,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: Colors.inputBg,
+    marginRight: Spacing.sm,
+  },
+  saveButton: {
+    backgroundColor: Colors.primary,
+  },
+  cancelText: {
+    color: Colors.textSecondary,
+    fontWeight: FontWeight.semibold,
+  },
+  saveText: {
+    color: Colors.onPrimary,
+    fontWeight: FontWeight.semibold,
   },
 });
 

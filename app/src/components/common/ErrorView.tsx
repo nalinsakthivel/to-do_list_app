@@ -1,5 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AppStrings } from '@/constants/AppStrings';
+import { Colors } from '@/constants/Colors';
+import { Spacing, Radius, FontSize, FontWeight } from '@/constants/Theme';
 
 type ErrorViewProps = {
   message?: string;
@@ -24,22 +26,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: Spacing.lg,
+    backgroundColor: Colors.background,
   },
   message: {
-    color: 'red',
+    color: Colors.danger,
+    fontSize: FontSize.body,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.md,
   },
   button: {
-    backgroundColor: '#111',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.primary,
+    borderRadius: Radius.button,
+    paddingVertical: Spacing.sm + Spacing.xs,
+    paddingHorizontal: Spacing.lg,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: Colors.onPrimary,
+    fontSize: FontSize.body,
+    fontWeight: FontWeight.semibold,
   },
 });
 
