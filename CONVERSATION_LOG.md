@@ -608,3 +608,15 @@ Screenshot shows current web login — card floating off-center, hero bleeding p
 *(Read all five current web UI files plus AppStrings to confirm exact current state before touching anything. Fully replaced `index.css` with the new token set and class system — `.login-page`/`.login-card` replacing the old hero+floating-card pattern, `.page`/`.page-inner` (520px centered) replacing `.app-shell`, flat `.tl-header`/`.tl-header-inner` replacing the old greeting-style header, `.stats-bar`, `.add-bar`/`.add-input`/`.send-button`, `.task-card`/`.task-checkbox`/`.task-title`/`.icon-button`, `.empty`/`.empty-icon`, `.modal-overlay`/`.modal-card`/`.modal-input`. Updated AppStrings: added `brand: 'TaskFlow'`, changed login subtitle copy, changed empty-state subtitle to "Add one above ↑", added `common.add`. Rewrote Login.tsx (circle logo + centered card, no hero), TaskList.tsx (flat header with brand + email + logout, stats bar, add-input, task list — dropped the old greeting/section-label rows entirely), AddTaskInput.tsx (text "Add" button instead of a plus icon), TaskCard.tsx (dropped the per-task created-time display and its now-unused `formatTime` helper, flattened the edit/delete buttons out of an now-unstyled wrapper div, renamed the modal's input class to `.modal-input`). Grepped for any leftover references to the removed old class names (`app-shell`, `auth-hero`, `auth-card`, `tl-greeting`, `section-label`, `task-time`, `task-actions`, etc.) — none found.)*
 
 Verified: `tsc -b` clean, Vite boots and serves 200 with the new CSS in place. Zero logic/hooks/services touched — same `useAuth`/`useTasks` contracts, same mutation calls, same store reads (email from authStore, completedCount derived from tasks). Couldn't visually confirm the rendered result myself (no browser automation here) — worth a reload to compare against the new spec.
+
+---
+
+### User
+
+> create a project readme file
+
+### Assistant
+
+*(Read all three package.json files and .env.example files to ground the README in actual current state rather than aspirational CLAUDE.md steps. Wrote README.md at repo root: stack table, repo layout, setup instructions for server/web/app each with real .env values, mobile API_BASE_URL guidance per target device (simulator/emulator/physical — including the LAN IP approach worked out earlier), test account curl command, real-time sync verification steps, API endpoint reference, and the production-readiness caveats from CLAUDE.md. Linked to CLAUDE.md and CONVERSATION_LOG.md.)*
+
+`README.md` created at repo root — covers stack, layout, per-app setup with real env values, mobile device-specific `API_BASE_URL` guidance, test accounts, sync verification steps, API reference, and production-readiness caveats.
