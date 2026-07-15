@@ -479,7 +479,6 @@ Follow these one at a time. Tell Claude Code:
 - Mirror Login + TaskList screens
 - Same Axios client with JWT from localStorage
 - Socket.IO connection same as mobile
-- Deploy to Vercel
 
 **Step 12 — Final Demo + Closing Review**
 - Run demo script below

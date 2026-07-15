@@ -9,13 +9,11 @@ import {
 import { connectSocket, disconnectSocket } from '@/network/socket';
 import { useAuthStore } from '@/stores/hooks/useAuthStore';
 import { useTaskStore } from '@/stores/hooks/useTaskStore';
-import { Task } from '@/types';
+import type { Task } from '@/types';
 import { logout } from '@/utils/SecurityUtils';
-import { RouteEnum } from '@/enums/RouteEnum';
-import { reset } from '@/routes/RootNavigation';
 import { parseAxiosError } from '@/utils/ErrorHandlerUtils';
 
-export const useScreen = () => {
+export const useTasks = () => {
   const token = useAuthStore((state) => state.token);
   const { tasks, setTasks } = useTaskStore();
   const [newTitle, setNewTitle] = useState('');
@@ -89,7 +87,6 @@ export const useScreen = () => {
 
   const handleLogout = () => {
     logout();
-    reset(RouteEnum.LOGIN);
   };
 
   return {
